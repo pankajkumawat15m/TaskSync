@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,7 +72,7 @@ const Task = React.memo(({ task, columnId, onEdit, onDelete }) => {
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onSelect={handleDeleteClick} // ✅ Ensures only one task is affected
+              onSelect={handleDeleteClick}
               className="text-destructive hover:bg-destructive/10"
             >
               Delete

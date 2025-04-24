@@ -13,7 +13,22 @@ const TaskDialog = ({ isOpen, onClose, columns, onAddTask, editingTask, onEditTa
     column: Object.keys(columns)[0] || "todo",
     date: new Date().toISOString().split("T")[0],
     deadline: "",
+    username: "Aarav", // Default to first name
   });
+
+  // List of 10 Indian names for the dropdown
+  const indianNames = [
+    "Aarav",
+    "Ananya",
+    "Arjun",
+    "Diya",
+    "Ishaan",
+    "Kavya",
+    "Rahul",
+    "Saanvi",
+    "Vikram",
+    "Zara"
+  ];
 
   useEffect(() => {
     if (editingTask) {
@@ -27,6 +42,7 @@ const TaskDialog = ({ isOpen, onClose, columns, onAddTask, editingTask, onEditTa
         column: selectedColumn || Object.keys(columns)[0] || "todo",
         date: new Date().toISOString().split("T")[0],
         deadline: "",
+        username: "Aarav", // Reset to default
       }));
     }
   }, [editingTask, columns, selectedColumn]);
@@ -46,7 +62,7 @@ const TaskDialog = ({ isOpen, onClose, columns, onAddTask, editingTask, onEditTa
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="sr-only">{editingTask ? "Edit Task" : "New Task"}</DialogTitle>
-          <p className="sr-only">Add or edit a task with title, column, priority, date, and deadline.</p>
+          <p className="sr-only">Add or edit a task with title, column, priority, date, deadline, and username.</p>
           <h3 className="text-lg font-semibold text-foreground">{editingTask ? "Edit Task" : "New Task"}</h3>
         </DialogHeader>
         <div className="space-y-4">
@@ -113,6 +129,24 @@ const TaskDialog = ({ isOpen, onClose, columns, onAddTask, editingTask, onEditTa
               onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
               className="border-input"
             />
+          </div>
+          <div>
+            <Label htmlFor="task-username">Assigned User</Label>
+            <Select
+              value={newTask.username}
+              onValueChange={(value) => setNewTask({ ...newTask, username: value })}
+            >
+              <SelectTrigger id="task-username" className="border-input">
+                <SelectValue placeholder="Select a user" />
+              </SelectTrigger>
+              <SelectContent>
+                {indianNames.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>
