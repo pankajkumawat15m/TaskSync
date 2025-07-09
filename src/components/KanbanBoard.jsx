@@ -110,36 +110,36 @@ const KanbanBoard = () => {
   const columnsArray = useMemo(() => Object.entries(columns), [columns]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white p-6">
-      <nav className="flex justify-between items-center mb-8 p-4 bg-gray-950 rounded-xl shadow-xl border border-gray-800">
-        <div className="flex items-center space-x-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white p-4 sm:p-6 md:p-8">
+      <nav className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 p-4 bg-gray-950 rounded-xl shadow-xl border border-gray-800">
+        <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-0">
           <img
             src={logo}
             alt="TaskSync Logo"
-            className="h-16 w-auto rounded-lg border-2 border-blue-500 bg-blue-900 p-1 transition-transform duration-300 ease-in-out hover:scale-110"
+            className="h-12 w-auto sm:h-16 rounded-lg border-2 border-blue-500 bg-blue-900 p-1 transition-transform duration-300 ease-in-out hover:scale-110"
           />
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500 hover:text-cyan-400 transition-colors duration-300">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500 hover:text-cyan-400 transition-colors duration-300">
             TaskSync
           </h1>
         </div>
-        <div className="space-x-4">
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <Button
             onClick={() => setIsTaskDialogOpen(true)}
-            className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-6 py-2 rounded-full shadow-md transition-all hover:from-cyan-500 hover:to-blue-600 hover:scale-105"
+            className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-full shadow-md transition-all hover:from-cyan-500 hover:to-blue-600 hover:scale-105 w-full sm:w-auto text-sm sm:text-base"
           >
             + New Task
           </Button>
           <Button
             variant="outline"
             onClick={() => setIsAddColumnDialogOpen(true)}
-            className="border-2 border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-900/30 hover:text-white transition-all"
+            className="border-2 border-blue-500 text-blue-400 px-4 py-2 rounded-full hover:bg-blue-900/30 hover:text-white transition-all w-full sm:w-auto text-sm sm:text-base"
           >
             + Add Column
           </Button>
         </div>
       </nav>
 
-      <div className="flex gap-6 overflow-x-auto pb-6 items-start no-scrollbar">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 overflow-x-auto pb-6 items-start no-scrollbar snap-x snap-mandatory">
         {columnsArray.length > 0 ? (
           columnsArray.map(([columnId, tasks]) => (
             <KanbanColumn
@@ -157,7 +157,9 @@ const KanbanBoard = () => {
             />
           ))
         ) : (
-          <p className="text-gray-300 text-center py-6 w-full">No columns yet. Add one!</p>
+          <p className="text-gray-300 text-center py-6 w-full text-sm sm:text-base">
+            No columns yet. Add one!
+          </p>
         )}
       </div>
 

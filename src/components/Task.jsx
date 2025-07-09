@@ -37,20 +37,18 @@ const Task = React.memo(({ task, columnId, onEdit, onDelete }) => {
 
   return (
     <div
-      className={`group p-3 mb-3 rounded-lg border-l-4 shadow-card hover:shadow-card-hover transition-shadow duration-200 bg-gray-50 ${
+      className={`group p-3 sm:p-4 mb-3 sm:mb-4 rounded-xl shadow-md transition-shadow duration-200 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white border-l-4 ${
         {
-          high: "border-l-task-border-high",
-          medium: "border-l-task-border-medium",
-          low: "border-l-task-border-low",
+          high: "border-red-500",
+          medium: "border-yellow-500",
+          low: "border-green-500",
         }[task.priority || "medium"]
       }`}
     >
       <div className="flex justify-between items-start">
-        <div>
-          <p className="font-medium text-foreground line-clamp-2">
-            {task.content}
-          </p>
-          <span className="inline-block mt-1 px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full">
+        <div className="w-full">
+          <p className="font-semibold text-sm sm:text-base line-clamp-2">{task.content}</p>
+          <span className="inline-block mt-2 px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs sm:text-sm font-medium rounded-full">
             {task.priority.toUpperCase()}
           </span>
         </div>
@@ -59,42 +57,44 @@ const Task = React.memo(({ task, columnId, onEdit, onDelete }) => {
             <Button
               variant="ghost"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground hover:bg-accent/50"
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               ⋮
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-gray-50 border-input">
+          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-300 dark:border-gray-600">
             <DropdownMenuItem
               onSelect={() => onEdit(task)}
-              className="text-foreground hover:bg-accent/50"
+              className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm sm:text-base"
             >
-              Edit
+              ✏️ Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={handleDeleteClick}
-              className="text-destructive hover:bg-destructive/10"
+              className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900 cursor-pointer text-sm sm:text-base"
             >
-              Delete
+              🗑 Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <div className="text-sm mt-2 space-y-1">
-        <p className="text-muted-foreground">
+      <div className="text-xs sm:text-sm mt-2 sm:mt-3 space-y-1">
+        <p className="text-gray-600 dark:text-gray-400">
           Created: {new Date(task.date).toLocaleDateString()}
         </p>
         {task.deadline && (
           <p
             className={
-              isOverdue ? "text-red-500 font-semibold" : "text-muted-foreground"
+              isOverdue
+                ? "text-red-600 font-semibold"
+                : "text-gray-600 dark:text-gray-400"
             }
           >
             Deadline: {timeRemaining}
           </p>
         )}
-        <p className="text-muted-foreground">
+        <p className="text-gray-600 dark:text-gray-400">
           Assigned to: {task.username || "Unassigned"}
         </p>
       </div>
