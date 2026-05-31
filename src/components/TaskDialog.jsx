@@ -1,13 +1,14 @@
-import { Button } from "./ui/Button";
-import { Input } from "./ui/Input";
-import { Label } from "./ui/Label";
+import { useState, useEffect } from "react";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "./ui/Select";
+  X,
+  FileText,
+  AlertTriangle,
+  User,
+  Calendar,
+  Layers,
+  Plus,
+  Clock
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,191 +16,208 @@ import {
   DialogFooter,
   DialogTitle,
 } from "./ui/Dialog";
-import { useState, useEffect } from "react";
+import { Button } from "./ui/Button";
 
 const TaskDialog = ({
   isOpen,
   onClose,
   columns,
   onAddTask,
-  editingTask,
-  onEditTask,
   selectedColumn,
+  defaultDeadline,
+  members
 }) => {
-  const [newTask, setNewTask] = useState({
-    id: "",
-    content: "",
-    priority: "medium",
-    column: Object.keys(columns)[0] || "todo",
-    date: new Date().toISOString().split("T")[0],
-    deadline: "",
-    username: "Aarav",
-  });
+  const [content, setContent] = useState("");
+  const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("medium");
+  const [column, setColumn] = useState("todo");
+  const [deadline, setDeadline] = useState("");
+  const [username, setUsername] = useState("Aarav");
+  const [timeEstimate, setTimeEstimate] = useState("4h");
 
-  const indianNames = [
-    "Aarav",
-    "Ananya",
-    "Arjun",
-    "Diya",
-    "Ishaan",
-    "Kavya",
-    "Rahul",
-    "Saanvi",
-    "Vikram",
-    "Zara",
-  ];
-
+  // Sync defaults when modal opens or column changes
   useEffect(() => {
-    if (editingTask) {
-      setNewTask(editingTask);
-    } else {
-      setNewTask((prev) => ({
-        ...prev,
-        id: "",
-        content: "",
-        priority: "medium",
-        column: selectedColumn || Object.keys(columns)[0] || "todo",
-        date: new Date().toISOString().split("T")[0],
-        deadline: "",
-        username: "Aarav",
-      }));
+    if (isOpen) {
+      setContent("");
+      setDescription("");
+      setPriority("medium");
+      setColumn(selectedColumn || (columns && columns[0]) || "todo");
+      setDeadline(defaultDeadline || "");
+      setUsername((members && members.length > 0) ? members[0].name : "Aarav");
+      setTimeEstimate("4h");
     }
-  }, [editingTask, columns, selectedColumn]);
+  }, [isOpen, selectedColumn, defaultDeadline, columns, members]);
 
   const handleSave = () => {
-    if (!newTask.content.trim()) return;
-    if (editingTask) {
-      onEditTask(newTask);
-    } else {
-      onAddTask(newTask);
-    }
+    if (!content.trim()) return;
+    onAddTask({
+      content,
+      description,
+      priority,
+      column,
+      deadline,
+      username,
+      timeEstimate,
+      date: new Date().toISOString().split("T")[0]
+    });
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl p-4 sm:p-6 max-w-[90vw] sm:max-w-lg overflow-y-auto max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle className="text-lg sm:text-xl font-bold">
-            {editingTask ? "Edit Task" : "New Task"}
+      <DialogContent className="bg-white dark:bg-gray-950 border border-slate-200 dark:border-gray-800 backdrop-blur-xl text-gray-900 dark:text-white rounded-2xl p-6 max-w-[90vw] sm:max-w-xl overflow-hidden shadow-2xl select-none animate-in fade-in zoom-in-95 duration-200 text-xs">
+        <DialogHeader className="pb-4 border-b border-slate-100 dark:border-gray-900 flex flex-row items-center justify-between">
+          <DialogTitle className="text-lg font-extrabold flex items-center gap-2">
+            <span className="p-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg">
+              <Plus size={16} />
+            </span>
+            <span>Create New Task</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="task-content" className="text-sm sm:text-base">
-              Task Title
-            </Label>
-            <Input
-              id="task-content"
-              value={newTask.content}
-              onChange={(e) => setNewTask({ ...newTask, content: e.target.value })}
-              placeholder="Enter task title"
-              className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base"
+        {/* Form Body */}
+        <div className="space-y-4 pt-4 max-h-[65vh] overflow-y-auto pr-1 scrollbar-thin text-xs">
+          {/* Content (Title) */}
+          <div className="space-y-1.5">
+            <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <FileText size={12} className="text-blue-600 dark:text-blue-400" />
+              <span>Task Title</span>
+            </label>
+            <input
+              type="text"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="e.g. Implement Oauth authentication"
+              className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 rounded-xl px-3 py-2.5 text-xs text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none transition"
+              autoFocus
             />
           </div>
 
-          <div>
-            <Label htmlFor="task-column" className="text-sm sm:text-base">
-              Column
-            </Label>
-            <Select
-              value={newTask.column}
-              onValueChange={(value) => setNewTask({ ...newTask, column: value })}
-            >
-              <SelectTrigger id="task-column" className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base">
-                <SelectValue placeholder="Select a column" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.keys(columns).map((col) => (
-                  <SelectItem key={col} value={col} className="text-sm sm:text-base">
+          {/* Description */}
+          <div className="space-y-1.5">
+            <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <FileText size={12} className="text-purple-600 dark:text-purple-400" />
+              <span>Description</span>
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Provide a detailed objective description..."
+              rows={3}
+              className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30 rounded-xl p-3 text-xs text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none resize-none transition"
+            />
+          </div>
+
+          {/* Grid properties */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Status (Column) */}
+            <div className="space-y-1.5">
+              <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers size={12} className="text-cyan-600 dark:text-cyan-400" />
+                <span>Column State</span>
+              </label>
+              <select
+                value={column}
+                onChange={(e) => setColumn(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 rounded-xl px-3 py-2 focus:outline-none cursor-pointer font-medium text-gray-700 dark:text-gray-300 transition"
+              >
+                {columns && columns.map((col) => (
+                  <option key={col} value={col} className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">
                     {col.replace(/([A-Z])/g, " $1")}
-                  </SelectItem>
+                  </option>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+              </select>
+            </div>
 
-          <div>
-            <Label htmlFor="task-priority" className="text-sm sm:text-base">
-              Priority
-            </Label>
-            <Select
-              value={newTask.priority}
-              onValueChange={(value) => setNewTask({ ...newTask, priority: value })}
-            >
-              <SelectTrigger id="task-priority" className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base">
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high" className="text-sm sm:text-base">High</SelectItem>
-                <SelectItem value="medium" className="text-sm sm:text-base">Medium</SelectItem>
-                <SelectItem value="low" className="text-sm sm:text-base">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="task-date" className="text-sm sm:text-base">
-              Created Date
-            </Label>
-            <Input
-              id="task-date"
-              type="date"
-              value={newTask.date}
-              onChange={(e) => setNewTask({ ...newTask, date: e.target.value })}
-              className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="task-deadline" className="text-sm sm:text-base">
-              Deadline
-            </Label>
-            <Input
-              id="task-deadline"
-              type="date"
-              value={newTask.deadline}
-              onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
-              className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="task-username" className="text-sm sm:text-base">
-              Assigned User
-            </Label>
-            <Select
-              value={newTask.username}
-              onValueChange={(value) => setNewTask({ ...newTask, username: value })}
-            >
-              <SelectTrigger id="task-username" className="border border-gray-300 dark:border-gray-600 rounded-md text-sm sm:text-base">
-                <SelectValue placeholder="Select user" />
-              </SelectTrigger>
-              <SelectContent>
-                {indianNames.map((name) => (
-                  <SelectItem key={name} value={name} className="text-sm sm:text-base">
-                    {name}
-                  </SelectItem>
+            {/* Assignee */}
+            <div className="space-y-1.5">
+              <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <User size={12} className="text-amber-600 dark:text-amber-400" />
+                <span>Assignee</span>
+              </label>
+              <select
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 rounded-xl px-3 py-2 focus:outline-none cursor-pointer font-medium text-gray-700 dark:text-gray-300 transition"
+              >
+                {members && members.map((m) => (
+                  <option key={m.id} value={m.name} className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">
+                    {m.avatar} {m.name} ({m.role})
+                  </option>
                 ))}
-              </SelectContent>
-            </Select>
+                {(!members || members.length === 0) && (
+                  <option value="Aarav" className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">
+                    Aarav
+                  </option>
+                )}
+              </select>
+            </div>
+
+            {/* Priority */}
+            <div className="space-y-1.5">
+              <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <AlertTriangle size={12} className="text-red-500 dark:text-red-400" />
+                <span>Severity Level</span>
+              </label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 rounded-xl px-3 py-2 focus:outline-none cursor-pointer font-medium text-gray-700 dark:text-gray-300 transition"
+              >
+                <option value="high" className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">🔴 High</option>
+                <option value="medium" className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">🟡 Medium</option>
+                <option value="low" className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white">🟢 Low</option>
+              </select>
+            </div>
+
+            {/* Time Estimate */}
+            <div className="space-y-1.5">
+              <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Clock size={12} className="text-emerald-600 dark:text-emerald-400" />
+                <span>Time Estimate</span>
+              </label>
+              <input
+                type="text"
+                value={timeEstimate}
+                onChange={(e) => setTimeEstimate(e.target.value)}
+                placeholder="e.g. 8h"
+                className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 rounded-xl px-3 py-2 focus:outline-none font-medium text-gray-700 dark:text-gray-300 transition"
+              />
+            </div>
+
+            {/* Deadline */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Calendar size={12} className="text-blue-600 dark:text-blue-400" />
+                <span>Target Due Date</span>
+              </label>
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 focus:border-blue-500 rounded-xl px-3 py-1.5 focus:outline-none font-bold text-gray-700 dark:text-gray-300 transition text-[11px]"
+              />
+            </div>
           </div>
         </div>
 
-        <DialogFooter className="pt-4 sm:pt-6 flex flex-col sm:flex-row gap-2">
+        {/* Footer */}
+        <DialogFooter className="pt-5 mt-4 border-t border-slate-100 dark:border-gray-900 flex justify-end gap-3 select-none">
           <Button
             variant="outline"
             onClick={onClose}
-            className="border border-gray-400 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 w-full sm:w-auto"
+            className="border-slate-200 dark:border-gray-800 hover:bg-slate-100 dark:hover:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl text-xs font-bold px-4"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md w-full sm:w-auto"
+            disabled={!content.trim()}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold px-5 shadow-lg shadow-blue-900/30 disabled:opacity-50"
           >
-            {editingTask ? "Save" : "Create"}
+            Create Task
           </Button>
         </DialogFooter>
       </DialogContent>
